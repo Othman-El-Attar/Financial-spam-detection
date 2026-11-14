@@ -3,6 +3,8 @@ from pathlib import Path
 import json
 import joblib
 import pandas as pd
+import traceback
+
 
 MODEL = joblib.load(Path(__file__).with_name('model.joblib'))
 
@@ -26,8 +28,11 @@ class handler(BaseHTTPRequestHandler):
                              'notice': 'Synthetic-data model output; not verification of sender authenticity.'})
         except (ValueError, TypeError, json.JSONDecodeError):
             self.reply(400, {'error': 'Invalid JSON request.'})
-        except Exception:
-            self.reply(500, {'error': 'Prediction failed.'})
+        
+        except Exception as e:
+            print("PREDICTION ERROR:", repr(e))
+            traceback.print_exc()
+            return jsonify({"error": str(e)}), 500
 
     def reply(self, status, data):
         content = json.dumps(data, ensure_ascii=False).encode('utf-8')
