@@ -1,36 +1,5 @@
-# FinSight Financial SMS Classifier — Vercel
+# FinSight SMS Security Lab — optional sender
 
-A deployable frontend and Python serverless API using the **existing trained model** (`api/model.joblib`). The model classifies Arabic/English deposit and withdrawal SMS as `safe` or `spam` using SMS text and sender ID.
+Deploy the **contents** of this folder at the Vercel repository root. Python endpoint: `/api/predict`. The sender ID is optional. Known sender IDs are exact-match aliases in `api/predict.py`; this list is illustrative and must be verified against official sender records before production use. A numeric phone sender (7–15 digits, optional + and formatting) is flagged `spam` by the requested strict rule. Otherwise the existing ML model predicts from SMS text and optional sender ID. `sender_status` and `decision_source` explain the result. A rule-only result has `probabilities: null` because it is not a calibrated ML score.
 
-## Deploy on Vercel
-
-1. Extract this ZIP and upload its contents to a GitHub repository.
-2. In Vercel, select **Add New → Project**, import the repository, and choose **Other** as framework preset.
-3. Leave the root directory as the repository root, leave the build command empty, and deploy.
-4. Visit the deployed URL. The frontend calls `/api/predict` on the same origin.
-
-`requirements.txt` is at the repository root for the Vercel Python function.
-
-## Run locally
-
-Install Python dependencies: `pip install -r requirements.txt`
-
-For the closest local simulation install Vercel CLI (`npm i -g vercel`) then run `vercel dev` and open the displayed local URL.
-
-## API
-
-`POST /api/predict` with JSON:
-
-```json
-{"sender_id":"CIB","sms_text":"Your account was debited by EGP 250."}
-```
-
-Returns `label` and `probabilities`.
-
-## Limitations
-
-- This is the previously trained model, not a new retraining.
-- Training data is synthetic and does not establish real-world fraud accuracy.
-- Sender ID is an input feature, **not** authenticated sender identity.
-- Do not use to automatically trust or store transactions without additional checks.
-- done
+The existing model was trained on synthetic data; `safe` does not establish authenticity. Keep the deployed scikit-learn version compatible with the exported joblib model. This package includes the previously required compatibility shim.
