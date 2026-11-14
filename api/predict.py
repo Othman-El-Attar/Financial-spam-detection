@@ -7,8 +7,16 @@ import logging
 import joblib
 import pandas as pd
 
+from sklearn.linear_model import LogisticRegression
+
 LOGGER = logging.getLogger(__name__)
 MODEL = joblib.load(Path(__file__).resolve().with_name("model.joblib"))
+
+# Compatibility workaround for older serialized models
+for _, estimator in MODEL.steps:
+    if isinstance(estimator, LogisticRegression):
+        if not hasattr(estimator, "multi_class"):
+            estimator.multi_class = "auto"
 
 
 class handler(BaseHTTPRequestHandler):
